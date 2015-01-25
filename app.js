@@ -26,8 +26,9 @@ app.Embed = Backbone.Model.extend({
   }
 
   , initialize: function () {
-    console.log(this)
-    console.log(arguments)
+    // initializes from json obj, using defaults where no key provided
+    console.log(arguments) 
+    console.log(this) // initializes from json obj, using defaults where no key provided
   }
 
 })
@@ -61,8 +62,9 @@ app.EmbedView = Backbone.View.extend({
   , template: _.template($('#embed-template').html())
 
   , render: function() {
-    this.$el.html( this.template( 
-      this.model.attributes
+    this.$el.html( 
+      this.template( 
+        this.model.attributes
     ))
     return this
   }
@@ -72,6 +74,7 @@ app.EmbedView = Backbone.View.extend({
 app.EmbedFormView = app.EmbedView.extend({
 
   template: _.template(
+  // TODO: this is stupid and bad
     '<button class="destroy">x</button>' + $('#embed-template').html()
   )
 
@@ -84,6 +87,7 @@ app.EmbedFormView = app.EmbedView.extend({
       'click .destroy' : 'destroy'
     })
   }
+
   , destroy: function () {
     this.model.destroy()
   }
@@ -96,7 +100,7 @@ app.InputBoxView = Backbone.View.extend({
   , initialize: function() {
     this.input = this.$('#input')
     this.hasEmbed = false
-    // DEBUG - get a rando embed right away
+    // TODO: DEBUG - get a rando embed right away
     this.getEmbed('')
   }
 
@@ -118,7 +122,9 @@ app.InputBoxView = Backbone.View.extend({
 
   , getEmbed: function(url) {
     var embedView = new app.EmbedFormView(
-      {model: new app.Embed(getRandomEmbedResponse() )}
+     {
+      model: new app.Embed( getRandomEmbedResponse() )
+     }
     )
     this.$('.embedContainer')
       .append(embedView.render().el)
