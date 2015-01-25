@@ -12,17 +12,19 @@ var app = {}
 // })
 
 app.Embed = Backbone.Model.extend({
-  defaults: {
-    url: ''
-    , title: ''
-    , description: ''
-    , author: ''
-    , provider: ''
-    , embedHTML: ''
+
+  defaults: { type: 'link'
+    , url: null
+    , title: null
+    , thumbnail_url: null
+    , description: null
+    , author_name: null
+    , author_url: null
+    , provider_name: null
+    , html: null
   }
+
 })
-
-
 // -- collections
 // app.PostList = Backbone.Collection.extend({
 //  model: app.Post
@@ -48,13 +50,24 @@ app.Embed = Backbone.Model.extend({
 
 
 app.EmbedView = Backbone.View.extend({
+
   tagName: 'div'
   , template: _.template($('#embed-template').html())
 
   , initialize: function() {
-    this.$el.html( this.template( this.model ))
+  }
+
+  , render: function() {
+    this.$el.html( this.template( 
+      _.extend({}, new app.Embed().defaults, this.model) // set join of defaults + returned json - this prevents absent keys from breaking the template
+    ))
     return this
   }
+
+  , events: {
+    'click .destroy' : 'destroy'
+  }
+
 
 })
 
@@ -65,6 +78,8 @@ app.InputBoxView = Backbone.View.extend({
   , initialize: function() {
     this.input = this.$('#input')
     this.hasEmbed = false
+    // DEBUG
+    this.getEmbed('')
   }
 
   , events: {
@@ -84,15 +99,7 @@ app.InputBoxView = Backbone.View.extend({
   } 
 
   , getEmbed: function(url) {
-    var embed = {
-      url: url 
-      , title: 'niiice'
-      , description: ''
-      , author: ''
-      , provider: ''
-      , embedHTML: ''
-    }
-    var embedView = new app.EmbedView({model: embed})
+    var embedView = new app.EmbedView({model: getRandomEmbedResponse()})
     this.$('.embedContainer').append(embedView.render().el)
   }
 
