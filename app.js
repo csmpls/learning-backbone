@@ -13,7 +13,8 @@ var app = {}
 
 app.Embed = Backbone.Model.extend({
 
-  defaults: { type: 'link'
+  defaults: { 
+    type: 'link'
     , url: null
     , title: null
     , thumbnail_url: null
@@ -22,6 +23,11 @@ app.Embed = Backbone.Model.extend({
     , author_url: null
     , provider_name: null
     , html: null
+  }
+
+  , initialize: function () {
+    console.log(this)
+    console.log(arguments)
   }
 
 })
@@ -54,21 +60,33 @@ app.EmbedView = Backbone.View.extend({
   tagName: 'div'
   , template: _.template($('#embed-template').html())
 
-  , initialize: function() {
-  }
-
   , render: function() {
     this.$el.html( this.template( 
-      _.extend({}, new app.Embed().defaults, this.model) // set join of defaults + returned json - this prevents absent keys from breaking the template
+      this.model.attributes
     ))
     return this
   }
 
-  , events: {
-    'click .destroy' : 'destroy'
+})
+
+app.EmbedFormView = app.EmbedView.extend({
+
+  template: _.template(
+    '<button class="destroy">x</button>' + $('#embed-template').html()
+  )
+
+  , initialize: function() {
+     this.model.on('destroy', this.remove, this)
   }
 
-
+  , events: function() {
+    return _.extend({},app.EmbedView.prototype.events,{
+      'click .destroy' : 'destroy'
+    })
+  }
+  , destroy: function () {
+    this.model.destroy()
+  }
 })
 
 
@@ -78,7 +96,7 @@ app.InputBoxView = Backbone.View.extend({
   , initialize: function() {
     this.input = this.$('#input')
     this.hasEmbed = false
-    // DEBUG
+    // DEBUG - get a rando embed right away
     this.getEmbed('')
   }
 
@@ -99,8 +117,11 @@ app.InputBoxView = Backbone.View.extend({
   } 
 
   , getEmbed: function(url) {
-    var embedView = new app.EmbedView({model: getRandomEmbedResponse()})
-    this.$('.embedContainer').append(embedView.render().el)
+    var embedView = new app.EmbedFormView(
+      {model: new app.Embed(getRandomEmbedResponse() )}
+    )
+    this.$('.embedContainer')
+      .append(embedView.render().el)
   }
 
   , findURLs: function(text) {

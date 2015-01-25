@@ -1,0 +1,11 @@
+
+
+extend Embed into PostableEmbedView
+	.
+	- allow edit << -- in a way thats not string concatination
+
+require.js split up templates
+simple gruntfile for less, js
+
+be posting the (relevant) embed info + text
+
