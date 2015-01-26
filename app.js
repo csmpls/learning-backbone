@@ -3,6 +3,13 @@
 // -- models
 var app = {}
 
+app.findURLs = function(text) {
+  // TODO: should match urls of the form www.regex.com and regex.com
+  return text.match(
+    /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
+ )
+}
+
 
 // app.Post = Backbone.Model.extend({
 //  defaults: {
@@ -27,8 +34,6 @@ app.Embed = Backbone.Model.extend({
 
   , initialize: function () {
     // initializes from json obj, using defaults where no key provided
-    console.log(arguments) 
-    console.log(this) // initializes from json obj, using defaults where no key provided
   }
 
 })
@@ -99,43 +104,56 @@ app.InputBoxView = Backbone.View.extend({
 
   , initialize: function() {
     this.input = this.$('#input')
-    this.hasEmbed = false
-    // TODO: DEBUG - get a rando embed right away
-    this.getEmbed('')
+    this.embedContainer = $('.embedContainer')
+    this.embeddedURLs = []
+    this.embedURLSearchTimeout = null
+    this.addEmbed('') // TODO: DEBUG - get a rando embed right away
   }
 
   , events: {
-    'keypress #input': 'lookForURL'
+    'keypress #input': 'handleKeypress'
   }
 
-  , lookForURL: function() {
-    if (!this.hasEmbed) {
-      var urls = this.findURLs(
-        this.$('#input').val()
-      )
-      if (urls) {
-        this.hasEmbed = true
-        this.getEmbed(urls[0])
-      }
-    }
-  } 
+  , addEmbed: function(url) {
 
-  , getEmbed: function(url) {
-    var embedView = new app.EmbedFormView(
-     {
-      model: new app.Embed( getRandomEmbedResponse() )
-     }
-    )
-    this.$('.embedContainer')
-      .append(embedView.render().el)
+    this.embeddedURLs.push(url)
+
+    var embedFormView = new app.EmbedFormView(
+     { model: new app.Embed(getRandomEmbedResponse()) } )
+
+    this.embedContainer.append(
+      embedFormView.render().el )
   }
 
-  , findURLs: function(text) {
-    // TODO: should match urls of the form www.regex.com and regex.com
-    return text.match(
-      /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
-    )
+  , handleKeypress: function() {
+    if (!this.hasEmbedForm()) this.embedFirstNewURL()
   }
+
+  , embedFirstNewURL: function() {
+    var new_urls = this.findNewURLs( app.findURLs(this.getInputText()) )
+    if (new_urls) this.addEmbed(new_urls[0])
+  }
+
+  // truthy if there's an embed form in the div
+  , hasEmbedForm: function() {
+    return this.embedContainer.html().length > 0
+  }
+
+  , findNewURLs: function(urls) {
+    var view = this
+    var newURLs = _.filter(urls, function(url){ return view.isURLNew(url) })
+    return newURLs.length > 0 ? newURLs : null
+  }
+
+  , isURLNew: function(url) {
+    return $.inArray(url, this.embeddedURLs) == -1 ? true : false
+  }
+
+ 
+  , getInputText: function() {
+    return this.$('#input').val()
+  }
+ 
 })
 
 app.inputBoxView = new app.InputBoxView()
