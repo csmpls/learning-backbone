@@ -1,17 +1,16 @@
 
 
 extend Embed into PostableEmbedView
-	right now, EmbedFormView would be changing InputBoxView.hasEmbed - this is no good ! InputBoxView should manage its own InputFormView 
 	InputFormView is (for now) identical, except that title+desc have input boxes .. is it easiest to just modify the template with jquery?
 
-require.js - text - or whatever else is recommended - to split up templates
+require.js - text - or whatever else is recommended - to split up templates, models, views, etc.
 simple gruntfile for less, js
 
 
 
 
-copy embeds to WoZ some posts ({username: , text: , embed: , date: })
-and pretend get, render & sort them
+make some WoZ posts ({username: , text: , embed: , date: })
+pretend get, render & sort them
 
 
 fork -->
@@ -19,4 +18,6 @@ fork -->
   simple pagination api (for scroll)
 
 
-now design .. realtime, message, rooms, comments, friendships, etc
+
+
+meanwhile, design/dream ....

@@ -3,11 +3,25 @@
 // -- models
 var app = {}
 
-app.findURLs = function(text) {
-  // TODO: should match urls of the form www.regex.com and regex.com
-  return text.match(
-    /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
- )
+app.functions = {
+
+  findURLs: function(text) {
+    // TODO: should match urls of the form www.regex.com and regex.com
+    return text.match(
+      /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
+   )
+  }
+
+  , isItemInList:  function(item, list) {
+    return $.inArray(item, list) == -1 ? true : false
+  }
+
+  , findNewItems: function(items, seen_items) {
+    var context = this
+    var newURLs = _.filter(items, function(i){ return context.isItemInList(i, seen_items) })
+    return newURLs.length > 0 ? newURLs : null
+  }
+
 }
 
 
@@ -100,6 +114,7 @@ app.EmbedFormView = app.EmbedView.extend({
 
 
 app.InputBoxView = Backbone.View.extend({
+
   el: '#inputBox'
 
   , initialize: function() {
@@ -115,40 +130,31 @@ app.InputBoxView = Backbone.View.extend({
   }
 
   , addEmbed: function(url) {
-
-    this.embeddedURLs.push(url)
-
+    // make an embed form + add it
     var embedFormView = new app.EmbedFormView(
      { model: new app.Embed(getRandomEmbedResponse()) } )
-
     this.embedContainer.append(
       embedFormView.render().el )
+    // add url to list of urls we've already embedded
+    this.embeddedURLs.push(url)
+  }
+
+  , embedFirstNewURL: function() {
+    var new_urls = 
+    app.functions.findNewItems( 
+      app.functions.findURLs( this.getInputText() ), 
+      this.embeddedURLs)
+    if (new_urls) this.addEmbed(new_urls[0])
   }
 
   , handleKeypress: function() {
     if (!this.hasEmbedForm()) this.embedFirstNewURL()
   }
 
-  , embedFirstNewURL: function() {
-    var new_urls = this.findNewURLs( app.findURLs(this.getInputText()) )
-    if (new_urls) this.addEmbed(new_urls[0])
-  }
-
   // truthy if there's an embed form in the div
   , hasEmbedForm: function() {
     return this.embedContainer.html().length > 0
   }
-
-  , findNewURLs: function(urls) {
-    var view = this
-    var newURLs = _.filter(urls, function(url){ return view.isURLNew(url) })
-    return newURLs.length > 0 ? newURLs : null
-  }
-
-  , isURLNew: function(url) {
-    return $.inArray(url, this.embeddedURLs) == -1 ? true : false
-  }
-
  
   , getInputText: function() {
     return this.$('#input').val()
