@@ -18,8 +18,7 @@ app.functions = {
 
   , findNewItems: function(items, seen_items) {
     var context = this
-    var newURLs = _.filter(items, function(i){ return context.isItemInList(i, seen_items) })
-    return newURLs.length > 0 ? newURLs : null
+    return _.filter(items, function(i){ return context.isItemInList(i, seen_items) })
   }
 
 }
@@ -93,8 +92,8 @@ app.EmbedView = Backbone.View.extend({
 app.EmbedFormView = app.EmbedView.extend({
 
   template: _.template(
-  // TODO: this is stupid and bad
-    '<button class="destroy">x</button>' + $('#embed-template').html()
+      // TODO: better way to do this?
+      $('#embed-template').prepend('<button class="destroy">x</button>').html()
   )
 
   , initialize: function() {
@@ -120,40 +119,52 @@ app.InputBoxView = Backbone.View.extend({
   , initialize: function() {
     this.input = this.$('#input')
     this.embedContainer = $('.embedContainer')
-    this.embeddedURLs = []
-    this.embedURLSearchTimeout = null
-    this.addEmbed('') // TODO: DEBUG - get a rando embed right away
+    this.alreadyEmbeddedURLs = []
+    this.addEmbedForm('')
+
+    // set an interval to check for new URLs
+    this.checkNewURLsInterval = window.setInterval(
+      function() {
+        if (!this.hasEmbedForm()) this.embedFirstNewURL()
+      }.bind(this)
+    , 1000)
+
   }
 
   , events: {
-    'keypress #input': 'handleKeypress'
+    // 'keypress #input': 'handleKeypress'
   }
 
-  , addEmbed: function(url) {
+  // , handleKeypress: function() {
+  //   if (!this.hasEmbedForm()) this.embedFirstNewURL()
+  // }
+
+  , embedFirstNewURL: function() {
+    var new_urls = app.functions.findNewItems(
+      this.getTypedURLs(), 
+      this.alreadyEmbeddedURLs)
+    if (new_urls.length>0) this.addEmbedForm(new_urls[0])
+  }
+
+  // TODO: get request + hide/display a spinner
+  // TODO: slide down/fade in embed form
+  , addEmbedForm: function(url) {
     // make an embed form + add it
     var embedFormView = new app.EmbedFormView(
      { model: new app.Embed(getRandomEmbedResponse()) } )
     this.embedContainer.append(
-      embedFormView.render().el )
+      embedFormView.render().el)
     // add url to list of urls we've already embedded
-    this.embeddedURLs.push(url)
-  }
-
-  , embedFirstNewURL: function() {
-    var new_urls = 
-    app.functions.findNewItems( 
-      app.functions.findURLs( this.getInputText() ), 
-      this.embeddedURLs)
-    if (new_urls) this.addEmbed(new_urls[0])
-  }
-
-  , handleKeypress: function() {
-    if (!this.hasEmbedForm()) this.embedFirstNewURL()
+    this.alreadyEmbeddedURLs.push(url)
   }
 
   // truthy if there's an embed form in the div
   , hasEmbedForm: function() {
     return this.embedContainer.html().length > 0
+  }
+
+  , getTypedURLs: function() {
+    return app.functions.findURLs( this.getInputText() )
   }
  
   , getInputText: function() {
