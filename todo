@@ -1,0 +1,27 @@
+
+
+2. --> jade
+
+3. writing and running tests
+
+http://www.eyescreamsunday.com/
+hongkongunrest.com
+
+
+
+
+
+
+
+
+
+fake posts ({username: , text: , embed: , date: })
+render & sort them
+
+
+fork -->
+  routes -> user signins / user pages  / rooms
+  simple pagination api (for scroll)
+
+
+meanwhile, design/dream ....

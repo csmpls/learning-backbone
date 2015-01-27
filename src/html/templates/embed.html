@@ -1,0 +1,58 @@
+<script type="text/template" id="embed-template">
+
+  <div class = "embed <%- type %>">
+
+    <% if (type == '404') { %>
+      <div class = "title"> 404, not found </div>
+      <div class = "description"> This page is not available. </div>
+
+    <% } else if (type == 'photo') { %>
+
+      <img src="<%- url %>">
+
+    <% } else { %>
+
+      <% if(thumbnail_url) { %>
+          <div class = "thumbnail">
+            <img src="<%- thumbnail_url %>">
+          </div>
+      <% } %>
+
+      <div class = "title">
+        <% if (url) { %>
+          <a target="_blank"  href="<%- url %>"><%- title %></a>
+        <% } else { %>
+          <%- title %>
+        <% } %>
+      </div>
+
+      <div class = "attribution">
+        <% if (author_name) { %>
+          <span class = "author">
+            <% if (author_url) { %>
+              <a target="_blank" href="<%- author_url %>"><%- author_name %></a>
+            <% } else {  %>
+               <%- author_name %>
+            <% } %>
+            </span>
+       <% } %>
+       <% if (provider_name) { %>
+          <span class = "provider">
+            via <%- provider_name %></a>
+          </span>
+       <% } %>
+      </div>
+
+       <% if (description) { %>
+        <span class = "description"><%- description %></span>
+       <% } %>
+
+       <% if (html) { %>
+        <div class = "embed-html" data-html="<%- html %>"></div>
+       <% } %>
+
+     </div>
+
+   <% } %>
+
+</script>  

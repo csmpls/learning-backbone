@@ -5,16 +5,21 @@ module.exports = function(grunt) {
     concat: {
       options: {
         // define a string to put between each file in the concatenated output
-        separator: '\n//file break\n'
+        separator: '\n\n'
       }
       , dist: {
         // the files to concatenate
-        src: ['src/js/app.js'
+        files: {
+
+          'dist/build.js': ['src/js/app.js'
           , 'src/js/*/*.js'
-          , 'src/js/initializers.js'
-          ]
-        // the location of the resulting JS file
-        , dest: 'dist/build.js'
+          , 'src/js/initializers.js']
+
+          , 'dist/index.html': ['src/html/header.html'
+          , 'src/html/layout.html'
+          , 'src/html/templates/*.html'
+          , 'src/html/footer.html']
+        }
       }
     }
 
