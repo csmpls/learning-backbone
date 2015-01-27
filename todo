@@ -1,23 +1,25 @@
 
 
-extend Embed into PostableEmbedView
-	InputFormView is (for now) identical, except that title+desc have input boxes .. is it easiest to just modify the template with jquery?
+2. whatevers recommended for splitting up _ templates
 
-require.js - text - or whatever else is recommended - to split up templates, models, views, etc.
-simple gruntfile for less, js
-
+http://www.eyescreamsunday.com/
+hongkongunrest.com
 
 
 
-make some WoZ posts ({username: , text: , embed: , date: })
-pretend get, render & sort them
+
+
+
+
+
+
+fake posts ({username: , text: , embed: , date: })
+render & sort them
 
 
 fork -->
   routes -> user signins / user pages  / rooms
   simple pagination api (for scroll)
-
-
 
 
 meanwhile, design/dream ....
